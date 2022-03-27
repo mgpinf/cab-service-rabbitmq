@@ -4,6 +4,8 @@ import time
 import os
 import requests
 
+time.sleep(5)
+
 consumer_id=None
 def route():
     server_id,server_port=str(os.environ()).split(":")
@@ -13,7 +15,7 @@ def route():
     requests.post(url,data=names)
     
 
-connection=pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+connection=pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
 channel=connection.channel()
 
 channel.exchange_declare(exchange='direct_logs',exchange_type='direct')
