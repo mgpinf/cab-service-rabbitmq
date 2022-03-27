@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 import pika
 import sys
 import time
