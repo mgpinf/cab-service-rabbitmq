@@ -32,20 +32,8 @@ def send_message(key,message):
 
 @app.route("/new_ride", methods=["POST"])
 def new_ride():
-    #consumer_id = request.args.get("consumer_id")
-    pickup = request.json.get("pickup")
-    destination = request.json.get("destination")
-    time_in_seconds = request.json.get("time")
-    cost = request.json.get("cost")
-    seats = request.json.get("seats")
-    current_consumer_details = (pickup, destination, time_in_seconds, cost, seats)
-    #print(current_consumer_details)
-    send_message('ride_matching_consumer',request.json)
-    #amqp_url = os.environ['AMQP_URL']
-    #url_params = pika.URLParameters(amqp_url)
-    #if session["consumers_details"] is None:
-    #    session["consumers_details"] = []
-    #session["consumers_details"].append(current_consumer_details)
+    message=json.dumps(request.json)
+    send_message("ride_matching_consumer",message)
     return ""
 
 # post req. comes from consumer
@@ -60,12 +48,6 @@ def new_ride_matching_consumer():
     consumer_key=(consumer_name, consumer_ip_addr)
     consumer_value=(consumer_id, request_ip_addr)
     key_value_dict[consumer_key]=consumer_value
-    #print(key_value_dict)
-    #print(consumer_key)
-    #print(consumer_value)
-    #if session["consumers_details_matching"] is None:
-    #    session["consumers_details_matching"] = []
-    #session["consumers_details_matching"].append(current_consumer_details_matching)
     return ""
 
 @app.route("/rabbit_test", methods=["GET"])
