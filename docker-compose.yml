@@ -24,7 +24,6 @@ services:
     depends_on:
       - rabbitmq
   
-
   database_consumer:
     build: database_consumer
     volumes:
@@ -33,9 +32,3 @@ services:
       - 6000:6000
     depends_on:
       - rabbitmq
-      - mongodb
-  
-  mongodb:
-    image: mongo
-    expose:
-      - 5187
