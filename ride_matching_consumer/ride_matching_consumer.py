@@ -4,7 +4,7 @@ import time
 import os
 import requests
 
-time.sleep(5)
+time.sleep(10)
 
 consumer_id=None
 def route():

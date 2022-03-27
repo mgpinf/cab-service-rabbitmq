@@ -3,6 +3,7 @@ import pymongo
 import socket
 import pika
 import time
+import json
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -14,21 +15,17 @@ HOST="0.0.0.0"
 
 key_value_dict={}
 
-def send_message():
-    connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
+def send_message(key,message):
+    connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq"))
     channel = connection.channel()
     
     channel.exchange_declare(exchange="direct_logs",exchange_type="direct")
     
-    key="ride_matching"
-    message_body="Please match a ride to my request"
     
-    channel.basic_publish(exchange="direct_logs",routing_key=key,body=message_body,properties=pika.BasicProperties(delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE))
-    
-    key="database"
-    message_body="Please add it to your database"
-    
-    channel.basic_publish(exchange="direct_logs",routing_key=key,body=message_body)
+    if(key=='ride_matching_consumer'):
+        channel.basic_publish(exchange="direct_logs",routing_key=key,body=message,properties=pika.BasicProperties(delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE))
+    else:
+        channel.basic_publish(exchange="direct_logs",routing_key=key,body=message)
     
     print("Message successfully sent")
     connection.close()
@@ -43,7 +40,7 @@ def new_ride():
     seats = request.json.get("seats")
     current_consumer_details = (pickup, destination, time_in_seconds, cost, seats)
     #print(current_consumer_details)
-    send_message()
+    send_message('ride_matching_consumer',request.json)
     #amqp_url = os.environ['AMQP_URL']
     #url_params = pika.URLParameters(amqp_url)
     #if session["consumers_details"] is None:
@@ -70,6 +67,11 @@ def new_ride_matching_consumer():
     #    session["consumers_details_matching"] = []
     #session["consumers_details_matching"].append(current_consumer_details_matching)
     return ""
+
+@app.route("/rabbit_test", methods=["GET"])
+def test_rabbitmq():
+    send_message('ride_matching_consumer','This is a sample Message')
+    return "Test Successful"
 
 if __name__=="__main__":
     print("Server running in port {}".format(PORT))
