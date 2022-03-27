@@ -4,9 +4,17 @@ import time
 import os
 import requests
 
-time.sleep(15)
+time.sleep(20)
 
-consumer_id=None
+producer_ip_addr=os.environ("PRODUCER_ADDR")
+consumer_id=os.environ("CONSUMER_ID")
+PORT=3200
+
+url="http://"+producer_ip_addr+":3200/new_ride_matching_consumer"
+myobj = {"CONSUMER_ID": consumer_id}
+
+requests.post(url, data = myobj)
+
 def route():
     server_id,server_port=str(os.environ()).split(":")
     consumer_id=int(os.environ())
