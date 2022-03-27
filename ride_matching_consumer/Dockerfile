@@ -7,9 +7,10 @@ RUN apt-get update -y && \
 
 RUN pip3 install pika
 
-WORKDIR /app
+WORKDIR /ride_matching_consumer
 
-COPY . /app
+COPY . /ride_matching_consumer
+
 
 ENTRYPOINT [ "python3" ]
 
