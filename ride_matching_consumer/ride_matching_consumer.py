@@ -4,8 +4,6 @@ import time
 import os
 import requests
 
-
-print("Hello From Consumer")
 time.sleep(15)
 
 consumer_id=None
@@ -27,13 +25,10 @@ queue=channel.queue_declare(queue='',durable=True)
 channel.queue_bind(exchange='direct_logs',queue=queue.method.queue,routing_key='ride_matching_consumer')
 
 def callback(ch,method,properties,body):
-    print(body)
     sleep_seconds = 0
     time.sleep(sleep_seconds)
     time.sleep(3)
-    print('[x] Done')
-    print(consumer_id)
-    print(method.delivery_tag)
+    print(body)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 channel.basic_qos(prefetch_count=1)

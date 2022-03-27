@@ -34,6 +34,7 @@ def send_message(key,message):
 def new_ride():
     message=json.dumps(request.json)
     send_message("ride_matching_consumer",message)
+    send_message("database_consumer",message)
     return ""
 
 # post req. comes from consumer
@@ -53,6 +54,7 @@ def new_ride_matching_consumer():
 @app.route("/rabbit_test", methods=["GET"])
 def test_rabbitmq():
     send_message('ride_matching_consumer','This is a sample Message')
+    send_message('database_consumer','This is a sample Message')
     return "Test Successful"
 
 if __name__=="__main__":

@@ -24,10 +24,11 @@ services:
     depends_on:
       - rabbitmq
   
-  #database_consumer:
-  #  build: database_consumer
-  #  volumes:
-  #    - ./database_consumer:/app
-  #  ports:
-  #    - 6000:6000
-    
+  database_consumer:
+    build: database_consumer
+    volumes:
+      - ./database_consumer:/app
+    ports:
+      - 6000:6000
+    depends_on:
+      - rabbitmq
