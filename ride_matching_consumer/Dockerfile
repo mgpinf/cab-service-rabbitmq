@@ -9,6 +9,8 @@ COPY requirements.txt .
 
 RUN pip3 install -r requirements.txt
 
+ENV PYTHONUNBUFFERED=1
+
 WORKDIR /ride_matching_consumer
 
 COPY . /ride_matching_consumer

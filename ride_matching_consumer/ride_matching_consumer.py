@@ -4,7 +4,9 @@ import time
 import os
 import requests
 
-time.sleep(10)
+
+print("Hello From Consumer")
+time.sleep(15)
 
 consumer_id=None
 def route():
@@ -22,7 +24,7 @@ channel.exchange_declare(exchange='direct_logs',exchange_type='direct')
 
 queue=channel.queue_declare(queue='',durable=True)
 
-channel.queue_bind(exchange='direct_logs',queue=queue.method.queue,routing_key='ride_matching')
+channel.queue_bind(exchange='direct_logs',queue=queue.method.queue,routing_key='ride_matching_consumer')
 
 def callback(ch,method,properties,body):
     print(body)
@@ -34,7 +36,7 @@ def callback(ch,method,properties,body):
     print(method.delivery_tag)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
-#channel.basic_qos(prefetch_count=1)
+channel.basic_qos(prefetch_count=1)
 channel.basic_consume(queue=queue.method.queue,on_message_callback=callback)
 
 channel.start_consuming()
