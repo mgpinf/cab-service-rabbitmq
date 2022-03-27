@@ -22,10 +22,10 @@ services:
     ports:
       - 5000:5000
   
-  database_consumer:
-    build: database_consumer
-    volumes:
-      - ./database_consumer:/app
-    ports:
-      - 6000:6000
+  #database_consumer:
+  #  build: database_consumer
+  #  volumes:
+  #    - ./database_consumer:/app
+  #  ports:
+  #    - 6000:6000
     
