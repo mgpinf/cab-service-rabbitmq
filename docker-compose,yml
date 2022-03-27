@@ -11,14 +11,21 @@ services:
   producer:
     build: producer
     volumes:
-      - ./worker:/app
+      - ./producer:/app
     environment:
       - PYTHONUNBUFFERED=1
   
-  consumer:
-    build: consumer
+  ride_matching_consumer:
+    build: ride_matching_consumer
     volumes:
-      - ./consumer:/app
+      - ./ride_matching_consumer:/app
     ports:
       - 5000:5000
+  
+  database_consumer:
+    build: database_consumer
+    volumes:
+      - ./database_consumer:/app
+    ports:
+      - 6000:6000
     
