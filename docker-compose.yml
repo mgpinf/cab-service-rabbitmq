@@ -21,6 +21,8 @@ services:
       - ./ride_matching_consumer:/app
     ports:
       - 5000:5000
+    depends_on:
+      - rabbitmq
   
   #database_consumer:
   #  build: database_consumer

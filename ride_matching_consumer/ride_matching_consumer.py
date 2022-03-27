@@ -4,7 +4,7 @@ import time
 import os
 import requests
 
-consumer_id=NULL
+consumer_id=None
 def route():
     server_id,server_port=str(os.environ()).split(":")
     consumer_id=int(os.environ())
