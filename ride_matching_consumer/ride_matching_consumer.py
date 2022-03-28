@@ -4,14 +4,15 @@ import time
 import os
 import json
 import requests
+import random
 
 time.sleep(20)
 
 server_id=str(os.getenv('SERVERIP'))
 consumer_id=int(os.getenv('CONSUMERID'))
-url="http://producer:3200/new_ride_matching_consumer"
-names={'consumer_id':consumer_id,'consumer_name':"Jhabhd"}
-requests.post(url,data=names)
+url="http://producer:3200/register_consumer"
+names={'consumer_id':consumer_id,'server_id':server_id}
+requests.post(url,json=names)
     
 
 connection=pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
@@ -35,6 +36,7 @@ def callback(ch,method,properties,body):
     print("Starting to sleep for ",sleep_seconds," seconds")
     print("MessageID ",task_id)
     time.sleep(sleep_seconds)
+    requests.post("http://producer:3200/new_ride_matching_consumer",json={'driver':random.randint(0,1000),'user':datadirc['user']})
     print(body)
     #print(consumer_id)
     #print(task_id)

@@ -9,6 +9,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 
 count=[1]
+consumers_active=[]
 app=Flask(__name__)
 
 PORT=3200
@@ -45,7 +46,6 @@ def new_ride():
 # post req. comes from consumer
 @app.route("/new_ride_matching_consumer", methods=["POST"])
 def new_ride_matching_consumer():
-    consumer_id = request.json
     #request_ip_addr = jsonify({"ip": request.remote_addr}), 200
     #request_ip_addr = request.remote_addr
     #host = socket.getfqdn()
@@ -53,7 +53,19 @@ def new_ride_matching_consumer():
     #consumer_key=(consumer_name, consumer_ip_addr)
     #consumer_value=(consumer_id, request_ip_addr)
     #key_value_dict[consumer_key]=consumer_value
-    print("Consumer ID : ",consumer_id)
+    print("Ride matched ------ >")
+    print("Ride Details : ",request.json)
+    send_message("database_consumer",json.dumps(request.json))
+    #consumers_active.append(request.json)
+    return ""
+
+@app.route("/get_consumers", methods=["GET"])
+def get_all_active_consumers():
+    return ("These are the consumers currently listening for messages \n"+str(consumers_active))
+
+@app.route("/register_consumer",methods=["POST"])
+def register_consumer():
+    consumers_active.append(str(request.json))
     return ""
 
 @app.route("/rabbit_test", methods=["GET"])
