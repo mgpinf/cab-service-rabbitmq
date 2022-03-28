@@ -24,8 +24,8 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      - SERVERIP=0.0.0.0
-      - CONSUMERID=1234
+      - SERVERIP='0.0.0.0'
+      - CONSUMER_ID=
   
 
   database_consumer:

@@ -2,15 +2,15 @@ import pika
 import sys
 import time
 import os
-import requests
 import json
+import requests
 
-time.sleep(15)
+time.sleep(20)
 
-server_id,server_port=str(os.environ("serverIP")).split(":")
-consumer_id=int(os.environ("consumerId"))
-url=server_id+":"+server_port+"/newride"
-names={consumer_id:"Jamie"}
+server_id=str(os.getenv('SERVERIP'))
+consumer_id=int(os.getenv('CONSUMERID'))
+url="http://producer:3200/new_ride_matching_consumer"
+names={'consumer_id':consumer_id,'consumer_name':"Jhabhd"}
 requests.post(url,data=names)
     
 
@@ -24,13 +24,20 @@ queue=channel.queue_declare(queue='',durable=True)
 channel.queue_bind(exchange='direct_logs',queue=queue.method.queue,routing_key='ride_matching_consumer')
 
 def callback(ch,method,properties,body):
-    datadirc=json.loads(body)
+    #sleep_seconds = 0
+    #time.sleep(sleep_seconds)
+    #time.sleep(3)
+    #print(body)
+    #ch.basic_ack(delivery_tag=method.delivery_tag)
+    datadirc=json.loads(body.decode("utf-8"))
     task_id=datadirc["taskId"]
     sleep_seconds = datadirc["time"]
+    print("Starting to sleep for ",sleep_seconds," seconds")
+    print("MessageID ",task_id)
     time.sleep(sleep_seconds)
     print(body)
-    print(consumer_id)
-    print(task_id)
+    #print(consumer_id)
+    #print(task_id)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 channel.basic_qos(prefetch_count=1)

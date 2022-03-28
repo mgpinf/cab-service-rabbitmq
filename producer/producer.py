@@ -8,6 +8,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime
 
+count=[1]
 app=Flask(__name__)
 
 PORT=3200
@@ -32,7 +33,11 @@ def send_message(key,message):
 
 @app.route("/new_ride", methods=["POST"])
 def new_ride():
-    message=json.dumps(request.json)
+    count[0]+=1
+    datadic=request.json
+    datadic['time']=5
+    datadic['taskId']=count[0]
+    message=json.dumps(datadic)
     send_message("ride_matching_consumer",message)
     send_message("database_consumer",message)
     return ""
@@ -40,21 +45,25 @@ def new_ride():
 # post req. comes from consumer
 @app.route("/new_ride_matching_consumer", methods=["POST"])
 def new_ride_matching_consumer():
-    consumer_id = request.json.get("consumer_id")
-    consumer_name = request.json.get("consumer_name")
+    consumer_id = request.json
     #request_ip_addr = jsonify({"ip": request.remote_addr}), 200
-    request_ip_addr = request.remote_addr
-    host = socket.getfqdn()
-    consumer_ip_addr = socket.gethostbyname(host)
-    consumer_key=(consumer_name, consumer_ip_addr)
-    consumer_value=(consumer_id, request_ip_addr)
-    key_value_dict[consumer_key]=consumer_value
+    #request_ip_addr = request.remote_addr
+    #host = socket.getfqdn()
+    #consumer_ip_addr = socket.gethostbyname(host)
+    #consumer_key=(consumer_name, consumer_ip_addr)
+    #consumer_value=(consumer_id, request_ip_addr)
+    #key_value_dict[consumer_key]=consumer_value
+    print("Consumer ID : ",consumer_id)
     return ""
 
 @app.route("/rabbit_test", methods=["GET"])
 def test_rabbitmq():
-    send_message('ride_matching_consumer','This is a sample Message')
-    send_message('database_consumer','This is a sample Message')
+    datadic={}
+    datadic['time']=5
+    datadic['taskId']=count
+    message=json.dumps(datadic)
+    send_message('ride_matching_consumer',message)
+    send_message('database_consumer',message)
     return "Test Successful"
 
 if __name__=="__main__":
