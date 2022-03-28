@@ -10,9 +10,6 @@ from datetime import datetime
 
 app=Flask(__name__)
 
-PORT=3200
-HOST="0.0.0.0"
-
 key_value_dict={}
 
 def send_message(key,message):
