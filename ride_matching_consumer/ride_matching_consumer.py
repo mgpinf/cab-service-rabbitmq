@@ -7,21 +7,11 @@ import json
 
 time.sleep(15)
 
-producer_ip_addr=os.environ("PRODUCER_ADDR")
-consumer_id=os.environ("CONSUMER_ID")
-PORT=3200
-
-url="http://"+PRODUCER_IP_ADDR+":3200/new_ride_matching_consumer"
-myobj = {'CONSUMER_ID': CONSUMER_ID}
-
-requests.post(url, data = myobj)
-
-def route():
-    server_id,server_port=str(os.environ("serverIP")).split(":")
-    consumer_id=int(os.environ("consumerId"))
-    url=server_id+":"+server_port+"/newride"
-    names={consumer_id:"Jamie"}
-    requests.post(url,data=names)
+server_id,server_port=str(os.environ("serverIP")).split(":")
+consumer_id=int(os.environ("consumerId"))
+url=server_id+":"+server_port+"/newride"
+names={consumer_id:"Jamie"}
+requests.post(url,data=names)
     
 
 connection=pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))

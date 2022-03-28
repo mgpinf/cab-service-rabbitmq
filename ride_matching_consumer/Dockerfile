@@ -10,8 +10,8 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 ENV PYTHONUNBUFFERED=1
-ENV PRODUCER_ADDR=0.0.0.0
-ENV CONSUMER_ID=1
+ENV serverIP="0.0.0.0"
+ENV consumer_id=1
 
 WORKDIR /ride_matching_consumer
 
