@@ -3,6 +3,7 @@ import sys
 import time
 import os
 import requests
+import json
 
 time.sleep(15)
 
@@ -16,8 +17,8 @@ myobj = {'CONSUMER_ID': CONSUMER_ID}
 requests.post(url, data = myobj)
 
 def route():
-    server_id,server_port=str(os.environ()).split(":")
-    consumer_id=int(os.environ())
+    server_id,server_port=str(os.environ("serverIP")).split(":")
+    consumer_id=int(os.environ("consumerId"))
     url=server_id+":"+server_port+"/newride"
     names={consumer_id:"Jamie"}
     requests.post(url,data=names)
@@ -33,10 +34,13 @@ queue=channel.queue_declare(queue='',durable=True)
 channel.queue_bind(exchange='direct_logs',queue=queue.method.queue,routing_key='ride_matching_consumer')
 
 def callback(ch,method,properties,body):
-    sleep_seconds = 0
+    datadirc=json.loads(body)
+    task_id=datadirc["taskId"]
+    sleep_seconds = datadirc["time"]
     time.sleep(sleep_seconds)
-    time.sleep(3)
     print(body)
+    print(consumer_id)
+    print(task_id)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 channel.basic_qos(prefetch_count=1)
