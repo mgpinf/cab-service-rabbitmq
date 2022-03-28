@@ -4,43 +4,54 @@ import time
 import os
 import json
 import requests
+import random
 
 time.sleep(20)
 
-server_id=str(os.getenv('SERVERIP'))
-consumer_id=int(os.getenv('CONSUMERID'))
-url="http://producer:3200/new_ride_matching_consumer"
-names={'consumer_id':consumer_id,'consumer_name':"Jhabhd"}
-requests.post(url,data=names)
-    
+server_id = str(os.getenv("SERVERIP"))
+consumer_id = int(os.getenv("CONSUMERID"))
+url = "http://producer:3200/register_consumer"
+names = {"consumer_id": consumer_id, "server_id": server_id}
+requests.post(url, json=names)
 
-connection=pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
-channel=connection.channel()
 
-channel.exchange_declare(exchange='direct_logs',exchange_type='direct')
+connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbitmq"))
+channel = connection.channel()
 
-queue=channel.queue_declare(queue='',durable=True)
+channel.exchange_declare(exchange="direct_logs", exchange_type="direct")
 
-channel.queue_bind(exchange='direct_logs',queue=queue.method.queue,routing_key='ride_matching_consumer')
+queue = channel.queue_declare(queue="", durable=True)
 
-def callback(ch,method,properties,body):
-    #sleep_seconds = 0
-    #time.sleep(sleep_seconds)
-    #time.sleep(3)
-    #print(body)
-    #ch.basic_ack(delivery_tag=method.delivery_tag)
-    datadirc=json.loads(body.decode("utf-8"))
-    task_id=datadirc["taskId"]
+channel.queue_bind(
+    exchange="direct_logs",
+    queue=queue.method.queue,
+    routing_key="ride_matching_consumer",
+)
+
+
+def callback(ch, method, properties, body):
+    # sleep_seconds = 0
+    # time.sleep(sleep_seconds)
+    # time.sleep(3)
+    # print(body)
+    # ch.basic_ack(delivery_tag=method.delivery_tag)
+    datadirc = json.loads(body.decode("utf-8"))
+    task_id = datadirc["taskId"]
     sleep_seconds = datadirc["time"]
-    print("Starting to sleep for ",sleep_seconds," seconds")
-    print("MessageID ",task_id)
+    print("Starting to sleep for ", sleep_seconds, " seconds")
+    print("MessageID ", task_id)
     time.sleep(sleep_seconds)
+    requests.post(
+        "http://producer:3200/new_ride_matching_consumer",
+        json={"driver": random.randint(0, 1000), "user": datadirc["user"]},
+    )
     print(body)
-    #print(consumer_id)
-    #print(task_id)
+    # print(consumer_id)
+    # print(task_id)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
+
 channel.basic_qos(prefetch_count=1)
-channel.basic_consume(queue=queue.method.queue,on_message_callback=callback)
+channel.basic_consume(queue=queue.method.queue, on_message_callback=callback)
 
 channel.start_consuming()
