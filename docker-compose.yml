@@ -1,0 +1,44 @@
+version: '3.2'
+
+services:
+  
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - '5670:5670'
+      - '5671:5671'
+  
+  producer:
+    build: producer
+    volumes:
+      - ./producer:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+  
+  ride_matching_consumer:
+    build: ride_matching_consumer
+    volumes:
+      - ./ride_matching_consumer:/app
+    ports:
+      - 5000:5000
+    depends_on:
+      - rabbitmq
+    environment:
+      - SERVERIP=0.0.0.0
+      - CONSUMERID=1234
+  
+
+  database_consumer:
+    build: database_consumer
+    volumes:
+      - ./database_consumer:/app
+    ports:
+      - 6000:6000
+    depends_on:
+      - rabbitmq
+      - mongodb
+  
+  mongodb:
+    image: mongo
+    expose:
+      - 5187
