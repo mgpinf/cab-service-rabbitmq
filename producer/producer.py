@@ -21,14 +21,17 @@ def send_message(key,message):
     connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq"))
     channel = connection.channel()
     
-    channel.exchange_declare(exchange="direct_logs",exchange_type="direct")
-    
+    #channel.exchange_declare(exchange="direct_logs",exchange_type="direct")
+    channel.queue_declare(queue='ride_matching_consumer',durable=True)
+    channel.queue_declare(queue='database_consumer')
+
     
     if(key=='ride_matching_consumer'):
-        channel.basic_publish(exchange="direct_logs",routing_key=key,body=message,properties=pika.BasicProperties(delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE))
+        channel.basic_publish(exchange='',routing_key='ride_matching_consumer',body=message,properties=pika.BasicProperties(delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE))
+        #channel.basic_publish(exchange="direct_logs",routing_key=key,body=message,properties=pika.BasicProperties(delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE))
     else:
-        channel.basic_publish(exchange="direct_logs",routing_key=key,body=message)
-    
+        #channel.basic_publish(exchange="direct_logs",routing_key=key,body=message)
+        channel.basic_publish(exchange='',routing_key='database_consumer',body=message)
     print("Message successfully sent")
     connection.close()
 
